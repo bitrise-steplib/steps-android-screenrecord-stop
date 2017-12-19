@@ -53,7 +53,7 @@ workflows:
             set -ex
 
             pkill -f qemu-system-i386
-            ls $BITRISE_DEPLOY_DIR
+            ls -alh $BITRISE_DEPLOY_DIR/$TEST_RECORD_ID_trimmed.mp4
 
   ci:
     before_run:
