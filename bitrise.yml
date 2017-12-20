@@ -9,7 +9,7 @@ app:
 workflows:
   test:
     steps:
-    - avd-manager:
+    - git::https://github.com/bitrise-steplib/steps-avd-manager@master:
     - wait-for-android-emulator:
     - change-workdir:
         title: Switch working dir to _tmp dir
@@ -20,12 +20,12 @@ workflows:
     - git::https://github.com/bitrise-steplib/steps-android-screenrecord-start.git@master:
         title: Start recording
         inputs:
-        - emulator_serial: emulator-5554
         - record_id: $TEST_RECORD_ID
     - script:
         inputs:
         - content: |-
             #!/bin/bash
+            env
             set -ex
             if [ ! "$TEST_RECORD_ID" == "$BITRISE_RECORD_ID" ]
             then
@@ -42,7 +42,6 @@ workflows:
     - path::./:
         title: Step Test
         inputs:
-        - emulator_serial: emulator-5554
         - remove_frames: "true"
         - record_id: $TEST_RECORD_ID
     - script:
@@ -53,7 +52,7 @@ workflows:
             set -ex
 
             pkill -f qemu-system-i386
-            ls -alh $BITRISE_DEPLOY_DIR/$TEST_RECORD_ID_trimmed.mp4
+            ls -alh $BITRISE_DEPLOY_DIR/${BITRISE_RECORD_ID}_trimmed.mp4
 
   ci:
     before_run:
@@ -132,6 +131,20 @@ workflows:
             go get -u -v github.com/golang/dep/cmd/dep
             dep ensure -v
             dep ensure -v -update
+
+  # ----------------------------------------------------------------
+  # --- workflows to create Release
+  create-release:
+    steps:
+    - script:
+        title:
+        inputs:
+        - content: |
+            #!/bin/bash
+            set -e
+
+            export CI=true
+            releaseman create --version $STEP_VERSION
 
   # ----------------------------------------------------------------
   # --- workflows to Share this step into a Step Library

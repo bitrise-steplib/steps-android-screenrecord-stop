@@ -59,7 +59,7 @@ func (model adbModel) pull(commands ...string) (string, error) {
 }
 
 func (model adbModel) shell(commands ...string) (string, error) {
-	cmd := command.New(model.adbBinPath, append([]string{"-s", model.serial, "shell"}, commands...)...)
+	cmd := command.New(model.adbBinPath, append([]string{"-s", model.serial, "exec-out"}, commands...)...)
 	return cmd.RunAndReturnTrimmedCombinedOutput()
 }
 
@@ -105,16 +105,12 @@ func mainE() error {
 
 	adb := adbModel{adbBinPath: adbBinPath, serial: configs.EmulatorSerial}
 
-	out, err := adb.shell("which screenrecord")
+	out, err := adb.shell("echo \"$(which screenrecord)\"")
 	if err != nil {
 		return fmt.Errorf("failed to run adb command, error: %s, output: %s", err, out)
 	}
 	if out == "" {
 		return fmt.Errorf("screenrecord binary is not available on the device")
-	}
-	out, err = adb.shell("ps | grep screenrecord")
-	if err != nil {
-		return fmt.Errorf("failed to run adb command or screenrecord is not running on the device, error: %s, output: %s", err, out)
 	}
 
 	log.Donef("- Done")
@@ -127,13 +123,12 @@ func mainE() error {
 	}
 
 	log.Printf("- Check if screen recording stopped")
-	out, err = adb.shell("ps | grep screenrecord | cat")
+	out, err = adb.shell("echo \"$(pgrep screenrecord)\"")
 	if err != nil {
 		return fmt.Errorf("failed to run adb command, error: %s, output: %s", err, out)
 	}
-
 	if out != "" {
-		return fmt.Errorf("screenrecord still running, out: %s", out)
+		return fmt.Errorf("screenrecord still running, output: %s", out)
 	}
 
 	log.Donef("- Stopped")
