@@ -1,6 +1,6 @@
 title: "Android Screenrecord Stop"
-summary: Stop an Android device's screen recording and pulls the recorded video under BITRISE_DEPLOY_DIR
-description: Stop an Android device's screen recording and pulls the recorded video under BITRISE_DEPLOY_DIR
+summary: Stop an Android device's screen recording and pulls the recorded video to `$BITRISE_DEPLOY_DIR`
+description: Stop an Android device's screen recording and pulls the recorded video to `$BITRISE_DEPLOY_DIR`
 website: https://github.com/bitrise-steplib/steps-android-screenrecord-stop
 source_code_url: https://github.com/bitrise-steplib/steps-android-screenrecord-stop
 support_url: https://github.com/bitrise-steplib/steps-android-screenrecord-stop/issues
